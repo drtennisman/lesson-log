@@ -299,10 +299,7 @@
     <div class="settings" id="settings">
       <label>Your Name</label>
       <select id="proName">
-        <option value="">Select pro...</option>
-        <option value="J.C.">J.C.</option>
-        <option value="Joey">Joey</option>
-        <option value="Matt">Matt</option>
+        <option value="">Loading pros...</option>
       </select>
       <label>Google Script URL</label>
       <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
@@ -326,8 +323,29 @@
       String(today.getDate()).padStart(2, '0');
     document.getElementById('lessonDate').value = dateStr;
 
-    document.getElementById('proName').value = settings.proName || '';
     document.getElementById('scriptUrl').value = settings.scriptUrl || '';
+
+    async function loadPros() {
+      const select = document.getElementById('proName');
+      if (!settings.scriptUrl) {
+        select.innerHTML = '<option value="">Set Script URL first</option>';
+        return;
+      }
+      try {
+        const res = await fetch(settings.scriptUrl + '?action=getPros');
+        const data = await res.json();
+        if (data.result === 'success' && data.pros.length > 0) {
+          select.innerHTML = '<option value="">Select pro...</option>' +
+            data.pros.map(p => `<option value="${p}"${p === settings.proName ? ' selected' : ''}>${p}</option>`).join('');
+        } else {
+          select.innerHTML = '<option value="">No pros found — add names to Pros tab</option>';
+        }
+      } catch (err) {
+        select.innerHTML = '<option value="">Failed to load pros</option>';
+      }
+    }
+
+    loadPros();
 
     document.querySelectorAll('[data-duration]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -458,6 +476,7 @@
       document.getElementById('settings').classList.remove('visible');
       document.getElementById('status').textContent = 'Settings saved';
       document.getElementById('status').className = 'status success';
+      loadPros();
     }
 
     function renderRecent() {

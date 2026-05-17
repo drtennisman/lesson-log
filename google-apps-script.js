@@ -1,11 +1,12 @@
 // Google Apps Script — deploy as Web App
 // 1. Create a new Google Sheet
-// 2. Go to Extensions > Apps Script
-// 3. Paste this code
-// 4. Deploy > New Deployment > Web App
+// 2. Create a tab called "Pros" and list pro names in column A (one per row)
+// 3. Go to Extensions > Apps Script
+// 4. Paste this code
+// 5. Deploy > New Deployment > Web App
 //    - Execute as: Me
 //    - Who has access: Anyone
-// 5. Copy the deployment URL and paste it into the app's Settings
+// 6. Copy the deployment URL and paste it into the app's Settings
 
 const HEADERS = ['Date', 'Client Name', 'Guest/Member', 'Duration', 'People', 'Rate', 'Notes'];
 
@@ -18,6 +19,35 @@ const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
+
+function doGet(e) {
+  var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : '';
+
+  if (action === 'getPros') {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var prosSheet = ss.getSheetByName('Pros');
+
+    var pros = [];
+    if (prosSheet) {
+      var lastRow = prosSheet.getLastRow();
+      if (lastRow > 0) {
+        var values = prosSheet.getRange(1, 1, lastRow, 1).getValues();
+        for (var i = 0; i < values.length; i++) {
+          var name = values[i][0].toString().trim();
+          if (name) pros.push(name);
+        }
+      }
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'success', pros: pros }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  return ContentService
+    .createTextOutput('ICC Lesson Log API is running.')
+    .setMimeType(ContentService.MimeType.TEXT);
+}
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -107,10 +137,4 @@ function doPost(e) {
   } finally {
     lock.releaseLock();
   }
-}
-
-function doGet() {
-  return ContentService
-    .createTextOutput('ICC Lesson Log API is running.')
-    .setMimeType(ContentService.MimeType.TEXT);
 }
