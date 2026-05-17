@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#1a1a2e">
-  <title>Lesson Log</title>
+  <title>ICC Lesson Log</title>
   <link rel="manifest" href="manifest.json">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -16,29 +16,24 @@
       background: #1a1a2e;
       color: #eee;
       min-height: 100vh;
-      padding: 20px;
-      padding-top: env(safe-area-inset-top, 20px);
+      padding: 16px;
+      padding-top: env(safe-area-inset-top, 16px);
     }
 
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-    }
+    .container { max-width: 400px; margin: 0 auto; }
 
     h1 {
-      font-size: 1.5rem;
-      margin-bottom: 24px;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
       text-align: center;
       color: #4ecca3;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
+    .form-group { margin-bottom: 14px; }
 
     label {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
       margin-bottom: 6px;
       color: #aaa;
@@ -48,9 +43,9 @@
 
     input, textarea, select {
       width: 100%;
-      padding: 14px 16px;
+      padding: 12px 14px;
       border: 1px solid #333;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #16213e;
       color: #eee;
       font-size: 1rem;
@@ -63,63 +58,71 @@
       border-color: #4ecca3;
     }
 
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
+    textarea { resize: vertical; min-height: 60px; }
 
-    .duration-row {
+    .btn-row {
       display: flex;
       gap: 8px;
     }
 
-    .duration-btn {
+    .toggle-btn {
       flex: 1;
-      padding: 12px 8px;
+      padding: 11px 8px;
       border: 1px solid #333;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #16213e;
       color: #eee;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       text-align: center;
     }
 
-    .duration-btn.active {
+    .toggle-btn.active {
       background: #4ecca3;
       color: #1a1a2e;
       border-color: #4ecca3;
+    }
+
+    .toggle-btn.guest-active {
+      background: #e74c3c;
+      color: #fff;
+      border-color: #e74c3c;
+    }
+
+    .toggle-btn.member-active {
+      background: #2ecc71;
+      color: #fff;
+      border-color: #2ecc71;
+    }
+
+    .toggle-btn.half-active {
+      background: #f39c12;
+      color: #1a1a2e;
+      border-color: #f39c12;
     }
 
     .submit-btn {
       width: 100%;
       padding: 16px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #4ecca3;
       color: #1a1a2e;
       font-size: 1.1rem;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 24px;
+      margin-top: 20px;
       transition: all 0.2s;
     }
 
-    .submit-btn:active {
-      transform: scale(0.97);
-      opacity: 0.9;
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
+    .submit-btn:active { transform: scale(0.97); opacity: 0.9; }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .status {
       text-align: center;
-      margin-top: 16px;
+      margin-top: 12px;
       font-size: 0.9rem;
       min-height: 24px;
     }
@@ -127,10 +130,7 @@
     .status.success { color: #4ecca3; }
     .status.error { color: #e74c3c; }
 
-    .settings-toggle {
-      text-align: center;
-      margin-top: 32px;
-    }
+    .settings-toggle { text-align: center; margin-top: 28px; }
 
     .settings-toggle button {
       background: none;
@@ -146,14 +146,11 @@
       margin-top: 16px;
       padding: 16px;
       background: #16213e;
-      border-radius: 12px;
+      border-radius: 10px;
     }
 
     .settings.visible { display: block; }
-
-    .settings input {
-      margin-bottom: 12px;
-    }
+    .settings input, .settings select { margin-bottom: 12px; }
 
     .settings .save-btn {
       width: 100%;
@@ -167,54 +164,125 @@
     }
 
     .recent-log {
-      margin-top: 32px;
-      padding-top: 24px;
+      margin-top: 28px;
+      padding-top: 20px;
       border-top: 1px solid #333;
     }
 
     .recent-log h2 {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #666;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .log-entry {
-      padding: 10px 14px;
+      padding: 10px 12px;
       background: #16213e;
       border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: 0.85rem;
+      margin-bottom: 6px;
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .log-entry .client-name { font-weight: 600; color: #4ecca3; }
-    .log-entry .meta { color: #888; margin-top: 4px; }
+    .log-entry .meta { color: #888; margin-top: 2px; font-size: 0.78rem; }
+    .log-entry .badge {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .badge-guest { background: #e74c3c; color: #fff; }
+    .badge-member { background: #2ecc71; color: #fff; }
+
+    .people-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .people-row button {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background: #16213e;
+      color: #eee;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .people-row button:active { background: #4ecca3; color: #1a1a2e; }
+
+    .people-count {
+      font-size: 1.1rem;
+      font-weight: 700;
+      min-width: 24px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Lesson Log</h1>
+    <h1>ICC Lesson Log</h1>
 
     <form id="lessonForm">
       <div class="form-group">
-        <label>Client</label>
+        <label>Date</label>
+        <input type="date" id="lessonDate">
+      </div>
+
+      <div class="form-group">
+        <label>Client Name</label>
         <input type="text" id="client" placeholder="Client name" required autocomplete="off">
       </div>
 
       <div class="form-group">
+        <label>Guest / Member</label>
+        <div class="btn-row">
+          <button type="button" class="toggle-btn guest-active" id="guestBtn" onclick="setGuestMember('GUEST')">Guest</button>
+          <button type="button" class="toggle-btn" id="memberBtn" onclick="setGuestMember('MEMBER')">Member</button>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>Duration</label>
-        <div class="duration-row">
-          <button type="button" class="duration-btn" data-minutes="30">30m</button>
-          <button type="button" class="duration-btn active" data-minutes="60">60m</button>
-          <button type="button" class="duration-btn" data-minutes="90">90m</button>
-          <button type="button" class="duration-btn" data-minutes="120">2hr</button>
+        <div class="btn-row">
+          <button type="button" class="toggle-btn" data-duration="30 minutes">30m</button>
+          <button type="button" class="toggle-btn active" data-duration="1 hour">1 hr</button>
+          <button type="button" class="toggle-btn" data-duration="1.5 hours">1.5 hr</button>
+          <button type="button" class="toggle-btn" data-duration="2 hours">2 hr</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>People</label>
+        <div class="people-row">
+          <button type="button" onclick="adjustPeople(-1)">-</button>
+          <span class="people-count" id="peopleCount">1</span>
+          <button type="button" onclick="adjustPeople(1)">+</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Rate</label>
+        <div class="btn-row">
+          <button type="button" class="toggle-btn active" data-rate="FULL" onclick="setRate('FULL', this)">Full</button>
+          <button type="button" class="toggle-btn" data-rate="HALF OFF" onclick="setRate('HALF OFF', this)">Half Off</button>
         </div>
       </div>
 
       <div class="form-group">
         <label>Notes <span style="color:#666">(optional)</span></label>
-        <textarea id="notes" placeholder="Quick notes about the lesson..."></textarea>
+        <textarea id="notes" placeholder="Quick notes..."></textarea>
       </div>
 
       <button type="submit" class="submit-btn" id="submitBtn">Log Lesson</button>
@@ -230,7 +298,12 @@
 
     <div class="settings" id="settings">
       <label>Your Name</label>
-      <input type="text" id="proName" placeholder="Your name">
+      <select id="proName">
+        <option value="">Select pro...</option>
+        <option value="J.C.">J.C.</option>
+        <option value="Joey">Joey</option>
+        <option value="Matt">Matt</option>
+      </select>
       <label>Google Script URL</label>
       <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
       <button class="save-btn" onclick="saveSettings()">Save Settings</button>
@@ -238,28 +311,63 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'lessonLog';
+    const STORAGE_KEY = 'iccLessonLog';
 
     let settings = JSON.parse(localStorage.getItem(`${STORAGE_KEY}_settings`) || '{}');
     let recentLessons = JSON.parse(localStorage.getItem(`${STORAGE_KEY}_recent`) || '[]');
-    let selectedDuration = 60;
+    let selectedDuration = '1 hour';
+    let selectedGuestMember = 'GUEST';
+    let selectedRate = 'FULL';
+    let peopleCount = 1;
+
+    const today = new Date();
+    const dateStr = today.getFullYear() + '-' +
+      String(today.getMonth() + 1).padStart(2, '0') + '-' +
+      String(today.getDate()).padStart(2, '0');
+    document.getElementById('lessonDate').value = dateStr;
 
     document.getElementById('proName').value = settings.proName || '';
     document.getElementById('scriptUrl').value = settings.scriptUrl || '';
 
-    document.querySelectorAll('.duration-btn').forEach(btn => {
+    document.querySelectorAll('[data-duration]').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('[data-duration]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        selectedDuration = parseInt(btn.dataset.minutes);
+        selectedDuration = btn.dataset.duration;
       });
     });
+
+    function setGuestMember(val) {
+      selectedGuestMember = val;
+      const gBtn = document.getElementById('guestBtn');
+      const mBtn = document.getElementById('memberBtn');
+      gBtn.className = 'toggle-btn' + (val === 'GUEST' ? ' guest-active' : '');
+      mBtn.className = 'toggle-btn' + (val === 'MEMBER' ? ' member-active' : '');
+    }
+
+    function setRate(val, btn) {
+      selectedRate = val;
+      document.querySelectorAll('[data-rate]').forEach(b => {
+        b.classList.remove('active', 'half-active');
+      });
+      if (val === 'HALF OFF') {
+        btn.classList.add('half-active');
+      } else {
+        btn.classList.add('active');
+      }
+    }
+
+    function adjustPeople(delta) {
+      peopleCount = Math.max(1, Math.min(10, peopleCount + delta));
+      document.getElementById('peopleCount').textContent = peopleCount;
+    }
 
     document.getElementById('lessonForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const client = document.getElementById('client').value.trim();
       const notes = document.getElementById('notes').value.trim();
+      const lessonDate = document.getElementById('lessonDate').value;
       const submitBtn = document.getElementById('submitBtn');
       const status = document.getElementById('status');
 
@@ -271,14 +379,35 @@
         return;
       }
 
+      if (!settings.proName) {
+        status.textContent = 'Select your name in Settings first';
+        status.className = 'status error';
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.textContent = 'Logging...';
       status.textContent = '';
 
+      const dateParts = lessonDate.split('-');
+      const displayDate = dateParts[1] + '/' + dateParts[2] + '/' + dateParts[0].slice(2);
+
+      let displayDuration = selectedDuration;
+      if (selectedRate === 'HALF OFF') {
+        displayDuration = 'HALF OFF ' + selectedDuration;
+      }
+      if (peopleCount > 1) {
+        displayDuration += ' ' + peopleCount + ' people';
+      }
+
       const payload = {
-        proName: settings.proName || 'Unknown',
+        date: displayDate,
+        pro: settings.proName,
         client,
-        duration: selectedDuration,
+        guestMember: selectedGuestMember,
+        duration: displayDuration,
+        people: peopleCount,
+        rate: selectedRate,
         notes
       };
 
@@ -294,13 +423,16 @@
           status.textContent = 'Logged!';
           status.className = 'status success';
 
-          recentLessons.unshift({ ...payload, time: new Date().toLocaleTimeString() });
-          if (recentLessons.length > 10) recentLessons.pop();
+          recentLessons.unshift({ ...payload, time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) });
+          if (recentLessons.length > 15) recentLessons.pop();
           localStorage.setItem(`${STORAGE_KEY}_recent`, JSON.stringify(recentLessons));
           renderRecent();
 
           document.getElementById('client').value = '';
           document.getElementById('notes').value = '';
+          peopleCount = 1;
+          document.getElementById('peopleCount').textContent = '1';
+          setRate('FULL', document.querySelector('[data-rate="FULL"]'));
           document.getElementById('client').focus();
         } else {
           throw new Error(result.message || 'Unknown error');
@@ -320,7 +452,7 @@
     }
 
     function saveSettings() {
-      settings.proName = document.getElementById('proName').value.trim();
+      settings.proName = document.getElementById('proName').value;
       settings.scriptUrl = document.getElementById('scriptUrl').value.trim();
       localStorage.setItem(`${STORAGE_KEY}_settings`, JSON.stringify(settings));
       document.getElementById('settings').classList.remove('visible');
@@ -335,11 +467,14 @@
         return;
       }
       container.innerHTML = `
-        <h2>Today's Lessons</h2>
+        <h2>Recent Lessons</h2>
         ${recentLessons.map(l => `
           <div class="log-entry">
-            <div class="client-name">${l.client}</div>
-            <div class="meta">${l.duration}min${l.notes ? ' · ' + l.notes.substring(0, 40) : ''} · ${l.time}</div>
+            <div>
+              <div class="client-name">${l.client}</div>
+              <div class="meta">${l.duration}${l.notes ? ' · ' + l.notes.substring(0, 30) : ''} · ${l.time}</div>
+            </div>
+            <span class="badge ${l.guestMember === 'GUEST' ? 'badge-guest' : 'badge-member'}">${l.guestMember}</span>
           </div>
         `).join('')}
       `;

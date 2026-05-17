@@ -1,11 +1,11 @@
 // Google Apps Script — deploy as Web App
-// 1. Create a Google Sheet
+// 1. Create a new Google Sheet
 // 2. Go to Extensions > Apps Script
 // 3. Paste this code
 // 4. Deploy > New Deployment > Web App
 //    - Execute as: Me
 //    - Who has access: Anyone
-// 5. Copy the deployment URL and paste it into the PWA's SCRIPT_URL variable
+// 5. Copy the deployment URL and paste it into the app's Settings
 
 const SHEET_NAME = 'Lessons';
 
@@ -15,20 +15,18 @@ function doPost(e) {
 
   try {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME)
-      || SpreadsheetApp.getActiveSpreadsheet().insertSheet(SHEET_NAME);
-
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Timestamp', 'Pro Name', 'Client', 'Duration (min)', 'Notes']);
-      sheet.getRange(1, 1, 1, 5).setFontWeight('bold');
-    }
+      || createSheet();
 
     const data = JSON.parse(e.postData.contents);
 
     sheet.appendRow([
-      new Date().toLocaleString(),
-      data.proName || '',
+      data.date,
+      data.pro,
       data.client,
+      data.guestMember,
       data.duration,
+      data.people || 1,
+      data.rate || 'FULL',
       data.notes || ''
     ]);
 
@@ -46,8 +44,20 @@ function doPost(e) {
   }
 }
 
+function createSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.insertSheet(SHEET_NAME);
+  const headers = ['Date', 'Pro', 'Client Name', 'Guest/Member', 'Duration', 'People', 'Rate', 'Notes'];
+  sheet.appendRow(headers);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+  sheet.setFrozenRows(1);
+  sheet.getRange(1, 1, 1, headers.length).setBackground('#1a1a2e');
+  sheet.getRange(1, 1, 1, headers.length).setFontColor('#ffffff');
+  return sheet;
+}
+
 function doGet() {
   return ContentService
-    .createTextOutput('Lesson Input API is running.')
+    .createTextOutput('ICC Lesson Log API is running.')
     .setMimeType(ContentService.MimeType.TEXT);
 }
