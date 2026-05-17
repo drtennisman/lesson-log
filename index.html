@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Lesson Log</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      padding: 20px;
+      padding-top: env(safe-area-inset-top, 20px);
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #4ecca3;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid #333;
+      border-radius: 12px;
+      background: #16213e;
+      color: #eee;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #4ecca3;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .duration-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .duration-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border: 1px solid #333;
+      border-radius: 12px;
+      background: #16213e;
+      color: #eee;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .duration-btn.active {
+      background: #4ecca3;
+      color: #1a1a2e;
+      border-color: #4ecca3;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: #4ecca3;
+      color: #1a1a2e;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: all 0.2s;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      min-height: 24px;
+    }
+
+    .status.success { color: #4ecca3; }
+    .status.error { color: #e74c3c; }
+
+    .settings-toggle {
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .settings-toggle button {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .settings {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      background: #16213e;
+      border-radius: 12px;
+    }
+
+    .settings.visible { display: block; }
+
+    .settings input {
+      margin-bottom: 12px;
+    }
+
+    .settings .save-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: #eee;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .recent-log {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #333;
+    }
+
+    .recent-log h2 {
+      font-size: 0.85rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .log-entry {
+      padding: 10px 14px;
+      background: #16213e;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+
+    .log-entry .client-name { font-weight: 600; color: #4ecca3; }
+    .log-entry .meta { color: #888; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Lesson Log</h1>
+
+    <form id="lessonForm">
+      <div class="form-group">
+        <label>Client</label>
+        <input type="text" id="client" placeholder="Client name" required autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label>Duration</label>
+        <div class="duration-row">
+          <button type="button" class="duration-btn" data-minutes="30">30m</button>
+          <button type="button" class="duration-btn active" data-minutes="60">60m</button>
+          <button type="button" class="duration-btn" data-minutes="90">90m</button>
+          <button type="button" class="duration-btn" data-minutes="120">2hr</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Notes <span style="color:#666">(optional)</span></label>
+        <textarea id="notes" placeholder="Quick notes about the lesson..."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Log Lesson</button>
+    </form>
+
+    <div class="status" id="status"></div>
+
+    <div class="recent-log" id="recentLog"></div>
+
+    <div class="settings-toggle">
+      <button onclick="toggleSettings()">Settings</button>
+    </div>
+
+    <div class="settings" id="settings">
+      <label>Your Name</label>
+      <input type="text" id="proName" placeholder="Your name">
+      <label>Google Script URL</label>
+      <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
+      <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'lessonLog';
+
+    let settings = JSON.parse(localStorage.getItem(`${STORAGE_KEY}_settings`) || '{}');
+    let recentLessons = JSON.parse(localStorage.getItem(`${STORAGE_KEY}_recent`) || '[]');
+    let selectedDuration = 60;
+
+    document.getElementById('proName').value = settings.proName || '';
+    document.getElementById('scriptUrl').value = settings.scriptUrl || '';
+
+    document.querySelectorAll('.duration-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedDuration = parseInt(btn.dataset.minutes);
+      });
+    });
+
+    document.getElementById('lessonForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const client = document.getElementById('client').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+      const submitBtn = document.getElementById('submitBtn');
+      const status = document.getElementById('status');
+
+      if (!client) return;
+
+      if (!settings.scriptUrl) {
+        status.textContent = 'Set your Google Script URL in Settings first';
+        status.className = 'status error';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Logging...';
+      status.textContent = '';
+
+      const payload = {
+        proName: settings.proName || 'Unknown',
+        client,
+        duration: selectedDuration,
+        notes
+      };
+
+      try {
+        const response = await fetch(settings.scriptUrl, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.result === 'success') {
+          status.textContent = 'Logged!';
+          status.className = 'status success';
+
+          recentLessons.unshift({ ...payload, time: new Date().toLocaleTimeString() });
+          if (recentLessons.length > 10) recentLessons.pop();
+          localStorage.setItem(`${STORAGE_KEY}_recent`, JSON.stringify(recentLessons));
+          renderRecent();
+
+          document.getElementById('client').value = '';
+          document.getElementById('notes').value = '';
+          document.getElementById('client').focus();
+        } else {
+          throw new Error(result.message || 'Unknown error');
+        }
+      } catch (err) {
+        status.textContent = 'Failed — check URL or connection';
+        status.className = 'status error';
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log Lesson';
+      }
+    });
+
+    function toggleSettings() {
+      document.getElementById('settings').classList.toggle('visible');
+    }
+
+    function saveSettings() {
+      settings.proName = document.getElementById('proName').value.trim();
+      settings.scriptUrl = document.getElementById('scriptUrl').value.trim();
+      localStorage.setItem(`${STORAGE_KEY}_settings`, JSON.stringify(settings));
+      document.getElementById('settings').classList.remove('visible');
+      document.getElementById('status').textContent = 'Settings saved';
+      document.getElementById('status').className = 'status success';
+    }
+
+    function renderRecent() {
+      const container = document.getElementById('recentLog');
+      if (recentLessons.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = `
+        <h2>Today's Lessons</h2>
+        ${recentLessons.map(l => `
+          <div class="log-entry">
+            <div class="client-name">${l.client}</div>
+            <div class="meta">${l.duration}min${l.notes ? ' · ' + l.notes.substring(0, 40) : ''} · ${l.time}</div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    renderRecent();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+  </script>
+</body>
+</html>
