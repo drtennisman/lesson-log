@@ -3,105 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#021f3d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#021f3d">
-  <title>ICC Lesson Log</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
+  <title>ICC Lesson Log</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ─── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
-      background: #f5f5f5;
-      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f4f0;
+      color: #1a1a1a;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Header */
+    /* ─── Header ───────────────────────────────────── */
     .header {
       background: linear-gradient(180deg, #052d54 0%, #021f3d 100%);
       color: #fff;
-      padding: 16px 20px;
-      padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
+      padding: 20px 16px 16px;
+      text-align: center;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .header img {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+    }
+    .header h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+    .header .user-badge {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.15);
+      padding: 3px 12px;
+      border-radius: 20px;
     }
 
-    .header-inner {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      max-width: 400px;
+    /* ─── Container ────────────────────────────────── */
+    .container {
+      max-width: 500px;
       margin: 0 auto;
+      padding: 16px;
     }
 
-    .header-logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      object-fit: contain;
+    /* ─── Screens ──────────────────────────────────── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ─── Cards ────────────────────────────────────── */
+    .card {
       background: #fff;
-      padding: 4px;
-      border: 3px solid #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
     }
 
-    .header h1 {
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      line-height: 1.2;
-    }
-
-    .header .subtitle {
-      font-size: 11px;
-      opacity: 0.65;
-      margin-top: 3px;
-      font-weight: 600;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-    }
-
-    .container { max-width: 400px; margin: 0 auto; padding: 16px; }
-
-    .form-group { margin-bottom: 14px; }
-
-    label {
+    /* ─── Buttons ──────────────────────────────────── */
+    .btn {
       display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: opacity 0.2s;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #052d54, #021f3d);
+      color: #fff;
     }
 
-    input, textarea, select {
+    /* ─── Form Inputs ─────────────────────────────── */
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
       width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #dcdcdc;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
       border-radius: 10px;
-      background: #fff;
-      color: #333;
-      font-size: 1rem;
+      font-size: 16px;
+      font-family: inherit;
+      background: #fafafa;
       transition: border-color 0.2s;
       -webkit-appearance: none;
+      color: #1a1a1a;
     }
-
-    input:focus, textarea:focus, select:focus {
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
       outline: none;
-      border-color: #021f3d;
+      border-color: #052d54;
+      background: #fff;
     }
+    .form-group textarea { resize: vertical; min-height: 70px; }
 
-    textarea { resize: vertical; min-height: 60px; }
-
+    /* ─── Toggle Buttons ──────────────────────────── */
     .btn-row {
       display: flex;
       gap: 8px;
@@ -109,12 +128,12 @@
 
     .toggle-btn {
       flex: 1;
-      padding: 11px 8px;
-      border: 1px solid #dcdcdc;
+      padding: 12px 6px;
+      border: 2px solid #e0e0e0;
       border-radius: 10px;
-      background: #fff;
-      color: #333;
-      font-size: 0.85rem;
+      background: #fafafa;
+      color: #1a1a1a;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -122,191 +141,168 @@
     }
 
     .toggle-btn.active {
-      background: #021f3d;
+      background: linear-gradient(135deg, #052d54, #021f3d);
       color: #fff;
-      border-color: #021f3d;
+      border-color: #052d54;
     }
 
     .toggle-btn.guest-active {
-      background: #e53935;
+      background: #dc3545;
       color: #fff;
-      border-color: #e53935;
+      border-color: #dc3545;
     }
 
     .toggle-btn.member-active {
-      background: #43a047;
+      background: #28a745;
       color: #fff;
-      border-color: #43a047;
+      border-color: #28a745;
     }
 
     .toggle-btn.half-active {
-      background: #fb8c00;
+      background: #e67e22;
       color: #fff;
-      border-color: #fb8c00;
+      border-color: #e67e22;
     }
 
-    .submit-btn {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      background: #021f3d;
-      color: #fff;
-      font-size: 1.1rem;
+    /* ─── People Counter ──────────────────────────── */
+    .people-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .people-row button {
+      width: 44px;
+      height: 44px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      background: #fafafa;
+      color: #052d54;
+      font-size: 1.3rem;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 20px;
-      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
     }
 
-    .submit-btn:active:not(:disabled) { background: #011529; transform: scale(0.99); }
-    .submit-btn:disabled { background: #7a9ab8; cursor: not-allowed; }
+    .people-row button:active {
+      background: #052d54;
+      color: #fff;
+      border-color: #052d54;
+    }
 
+    .people-count {
+      font-size: 1.2rem;
+      font-weight: 700;
+      min-width: 28px;
+      text-align: center;
+      color: #052d54;
+    }
+
+    /* ─── Status ───────────────────────────────────── */
     .status {
       text-align: center;
-      margin-top: 12px;
-      font-size: 0.9rem;
+      margin-top: 14px;
+      font-size: 14px;
       min-height: 24px;
       font-weight: 600;
     }
+    .status.success { color: #155724; }
+    .status.error { color: #721c24; }
 
-    .status.success { color: #2e7d32; }
-    .status.error { color: #c62828; }
+    /* ─── Recent Lessons ──────────────────────────── */
+    .recent-log {
+      margin-top: 20px;
+    }
 
-    .settings-toggle { text-align: center; margin-top: 28px; }
+    .recent-log h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .log-entry {
+      padding: 14px;
+      background: #fff;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+
+    .log-entry .client-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #052d54;
+    }
+    .log-entry .meta {
+      font-size: 13px;
+      color: #777;
+      margin-top: 2px;
+    }
+    .log-entry .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+    }
+    .badge-guest { background: #f8d7da; color: #721c24; }
+    .badge-member { background: #d4edda; color: #155724; }
+
+    /* ─── Settings ─────────────────────────────────── */
+    .settings-toggle { text-align: center; margin-top: 24px; }
 
     .settings-toggle button {
       background: none;
       border: none;
       color: #999;
-      font-size: 0.8rem;
+      font-size: 13px;
       cursor: pointer;
       text-decoration: underline;
     }
 
     .settings {
       display: none;
-      margin-top: 16px;
-      padding: 16px;
-      background: #fff;
-      border: 1px solid #eaeaea;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-top: 14px;
     }
 
     .settings.visible { display: block; }
-    .settings input, .settings select { margin-bottom: 12px; }
 
     .settings .save-btn {
+      display: block;
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       border: none;
-      border-radius: 8px;
-      background: #021f3d;
-      color: #fff;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .recent-log {
-      margin-top: 28px;
-      padding-top: 20px;
-      border-top: 1px solid #e0e0e0;
-    }
-
-    .recent-log h2 {
-      font-size: 0.8rem;
-      color: #999;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 10px;
-    }
-
-    .log-entry {
-      padding: 10px 12px;
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      margin-bottom: 6px;
-      font-size: 0.82rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-    }
-
-    .log-entry .client-name { font-weight: 700; color: #021f3d; }
-    .log-entry .meta { color: #888; margin-top: 2px; font-size: 0.78rem; }
-    .log-entry .badge {
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-    .badge-guest { background: #e53935; color: #fff; }
-    .badge-member { background: #43a047; color: #fff; }
-
-    .people-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .people-row button {
-      width: 40px;
-      height: 40px;
-      border: 1px solid #dcdcdc;
-      border-radius: 10px;
-      background: #fff;
-      color: #021f3d;
-      font-size: 1.2rem;
+      border-radius: 12px;
+      font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .people-row button:active { background: #021f3d; color: #fff; }
-
-    .people-count {
-      font-size: 1.1rem;
-      font-weight: 700;
-      min-width: 24px;
-      text-align: center;
-    }
-
-    /* Header name badge */
-    .user-badge {
-      display: inline-block;
-      margin-top: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      background: rgba(255,255,255,0.15);
-      padding: 3px 12px;
-      border-radius: 20px;
+      background: linear-gradient(135deg, #052d54, #021f3d);
       color: #fff;
+      margin-top: 4px;
     }
+    .settings .save-btn:active { opacity: 0.8; }
 
-    /* Screens */
-    .screen { display: none; }
-    .screen.active { display: block; }
-
-    /* First-run setup */
-    .setup-logo { text-align: center; margin: 28px 0 14px; }
+    /* ─── Setup Screen ─────────────────────────────── */
+    .setup-logo { text-align: center; margin: 32px 0 16px; }
     .setup-logo img {
-      width: 84px;
-      height: 84px;
-      border-radius: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
     }
     .setup-title {
       text-align: center;
       font-size: 22px;
       font-weight: 700;
-      color: #021f3d;
+      color: #052d54;
       margin-bottom: 6px;
     }
     .setup-subtitle {
@@ -315,24 +311,8 @@
       color: #777;
       margin-bottom: 24px;
     }
-    .setup-card {
-      background: #fff;
-      border: 1px solid #eaeaea;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-    .setup-card label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
     .setup-error {
-      color: #c62828;
+      color: #721c24;
       font-size: 13px;
       margin-top: 10px;
       text-align: center;
@@ -342,106 +322,114 @@
 </head>
 <body>
   <div class="header" id="appHeader" style="display:none;">
-    <div class="header-inner">
-      <img src="icon-192.png" alt="ICC" class="header-logo">
-      <div class="header-text">
-        <h1>ICC Lesson Log</h1>
-        <div class="user-badge" id="headerUser"></div>
-      </div>
-    </div>
+    <img src="icon-192.png" alt="ICC" style="border-radius:6px;">
+    <h1>Lesson Log</h1>
+    <div class="user-badge" id="headerUser"></div>
   </div>
 
   <div class="container">
 
-    <!-- ═══ SETUP SCREEN (first run) ═══ -->
+    <!-- ═══ SETUP SCREEN ═══ -->
     <div id="setupScreen" class="screen">
       <div class="setup-logo"><img src="icon-192.png" alt="ICC"></div>
       <div class="setup-title">ICC Lesson Log</div>
-      <div class="setup-subtitle">Who are you?</div>
-      <div class="setup-card">
-        <label for="setupProName">Your Name</label>
-        <select id="setupProName">
-          <option value="">Loading pros...</option>
-        </select>
-        <button class="submit-btn" id="setupBtn" onclick="completeSetup()">Get Started</button>
+      <div class="setup-subtitle">Quick lesson tracking for ICC pros</div>
+      <div class="card">
+        <div class="form-group">
+          <label for="setupProName">Your Name</label>
+          <select id="setupProName">
+            <option value="">Loading pros...</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="setupBtn" onclick="completeSetup()">Get Started</button>
         <p class="setup-error" id="setupError"></p>
       </div>
     </div>
 
     <!-- ═══ MAIN SCREEN ═══ -->
     <div id="mainScreen" class="screen">
-    <form id="lessonForm">
-      <div class="form-group">
-        <label>Date</label>
-        <input type="date" id="lessonDate">
+
+      <div class="card">
+        <form id="lessonForm">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="lessonDate">
+          </div>
+
+          <div class="form-group">
+            <label>Client Name</label>
+            <input type="text" id="client" placeholder="Client name" required autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label>Member / Guest</label>
+            <div class="btn-row">
+              <button type="button" class="toggle-btn guest-active" id="guestBtn" onclick="setGuestMember('GUEST')">Guest</button>
+              <button type="button" class="toggle-btn" id="memberBtn" onclick="setGuestMember('MEMBER')">Member</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Duration</label>
+            <div class="btn-row">
+              <button type="button" class="toggle-btn" data-duration="30 minutes">30m</button>
+              <button type="button" class="toggle-btn" data-duration="45 minutes">45m</button>
+              <button type="button" class="toggle-btn active" data-duration="1 hour">1 hr</button>
+              <button type="button" class="toggle-btn" data-duration="1.5 hours">1.5</button>
+              <button type="button" class="toggle-btn" data-duration="2 hours">2 hr</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>People</label>
+            <div class="people-row">
+              <button type="button" onclick="adjustPeople(-1)">&minus;</button>
+              <span class="people-count" id="peopleCount">1</span>
+              <button type="button" onclick="adjustPeople(1)">+</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Rate</label>
+            <div class="btn-row">
+              <button type="button" class="toggle-btn active" data-rate="FULL" onclick="setRate('FULL', this)">Full</button>
+              <button type="button" class="toggle-btn" data-rate="HALF OFF" onclick="setRate('HALF OFF', this)">Half Off</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Notes <span style="font-weight:400;color:#999">(optional)</span></label>
+            <textarea id="notes" placeholder="Quick notes..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="submitBtn">Log Lesson</button>
+        </form>
       </div>
 
-      <div class="form-group">
-        <label>Client Name</label>
-        <input type="text" id="client" placeholder="Client name" required autocomplete="off">
+      <div class="status" id="status"></div>
+
+      <div class="recent-log" id="recentLog"></div>
+
+      <div class="settings-toggle">
+        <button onclick="toggleSettings()">Settings</button>
       </div>
 
-      <div class="form-group">
-        <label>Guest / Member</label>
-        <div class="btn-row">
-          <button type="button" class="toggle-btn guest-active" id="guestBtn" onclick="setGuestMember('GUEST')">Guest</button>
-          <button type="button" class="toggle-btn" id="memberBtn" onclick="setGuestMember('MEMBER')">Member</button>
+      <div class="settings" id="settingsPanel">
+        <div class="card">
+          <div class="form-group">
+            <label>Your Name</label>
+            <select id="proName">
+              <option value="">Loading pros...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Google Script URL</label>
+            <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
+          </div>
+          <button class="save-btn" onclick="saveSettings()">Save Settings</button>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Duration</label>
-        <div class="btn-row">
-          <button type="button" class="toggle-btn" data-duration="30 minutes">30m</button>
-          <button type="button" class="toggle-btn" data-duration="45 minutes">45m</button>
-          <button type="button" class="toggle-btn active" data-duration="1 hour">1 hr</button>
-          <button type="button" class="toggle-btn" data-duration="1.5 hours">1.5 hr</button>
-          <button type="button" class="toggle-btn" data-duration="2 hours">2 hr</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>People</label>
-        <div class="people-row">
-          <button type="button" onclick="adjustPeople(-1)">-</button>
-          <span class="people-count" id="peopleCount">1</span>
-          <button type="button" onclick="adjustPeople(1)">+</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Rate</label>
-        <div class="btn-row">
-          <button type="button" class="toggle-btn active" data-rate="FULL" onclick="setRate('FULL', this)">Full</button>
-          <button type="button" class="toggle-btn" data-rate="HALF OFF" onclick="setRate('HALF OFF', this)">Half Off</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Notes <span style="color:#666">(optional)</span></label>
-        <textarea id="notes" placeholder="Quick notes..."></textarea>
-      </div>
-
-      <button type="submit" class="submit-btn" id="submitBtn">Log Lesson</button>
-    </form>
-
-    <div class="status" id="status"></div>
-
-    <div class="recent-log" id="recentLog"></div>
-
-    <div class="settings-toggle">
-      <button onclick="toggleSettings()">Settings</button>
-    </div>
-
-    <div class="settings" id="settings">
-      <label>Your Name</label>
-      <select id="proName">
-        <option value="">Loading pros...</option>
-      </select>
-      <label>Google Script URL</label>
-      <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
-      <button class="save-btn" onclick="saveSettings()">Save Settings</button>
-    </div>
     </div><!-- /mainScreen -->
   </div>
 
@@ -490,7 +478,6 @@
 
     loadPros();
 
-    // ─── Identity: pick your name once, then it's you moving forward ───
     function updateHeaderBadge() {
       const badge = document.getElementById('headerUser');
       badge.textContent = settings.proName || '';
@@ -520,7 +507,6 @@
       enterMain();
     }
 
-    // Returning pro (name already saved) goes straight to the form; first-timers see setup.
     if (settings.proName) { enterMain(); } else { showSetup(); }
 
     document.querySelectorAll('[data-duration]').forEach(btn => {
@@ -646,14 +632,14 @@
     });
 
     function toggleSettings() {
-      document.getElementById('settings').classList.toggle('visible');
+      document.getElementById('settingsPanel').classList.toggle('visible');
     }
 
     function saveSettings() {
       settings.proName = document.getElementById('proName').value;
       settings.scriptUrl = document.getElementById('scriptUrl').value.trim();
       localStorage.setItem(`${STORAGE_KEY}_settings`, JSON.stringify(settings));
-      document.getElementById('settings').classList.remove('visible');
+      document.getElementById('settingsPanel').classList.remove('visible');
       document.getElementById('status').textContent = 'Settings saved';
       document.getElementById('status').className = 'status success';
       loadPros();
@@ -672,7 +658,7 @@
           <div class="log-entry">
             <div>
               <div class="client-name">${l.client}</div>
-              <div class="meta">${l.duration}${l.notes ? ' · ' + l.notes.substring(0, 30) : ''} · ${l.time}</div>
+              <div class="meta">${l.duration}${l.people > 1 ? ' &middot; ' + l.people + ' people' : ''}${l.notes ? ' &middot; ' + l.notes.substring(0, 30) : ''} &middot; ${l.time}</div>
             </div>
             <span class="badge ${l.guestMember === 'GUEST' ? 'badge-guest' : 'badge-member'}">${l.guestMember}</span>
           </div>
