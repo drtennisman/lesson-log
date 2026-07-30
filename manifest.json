@@ -1,11 +1,11 @@
 {
-  "name": "Lesson Log",
-  "short_name": "LessonLog",
-  "description": "Quick lesson logging for tennis pros",
+  "name": "ICC Lesson Log",
+  "short_name": "Lesson Log",
+  "description": "Quick lesson logging for ICC racquet sports pros",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#1a1a2e",
+  "background_color": "#f5f5f5",
+  "theme_color": "#021f3d",
   "icons": [
     {
       "src": "icon-192.png",

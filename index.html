@@ -5,29 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="theme-color" content="#021f3d">
   <title>ICC Lesson Log</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: #1a1a2e;
-      color: #eee;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: #f5f5f5;
+      color: #333;
       min-height: 100vh;
-      padding: 16px;
-      padding-top: env(safe-area-inset-top, 16px);
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container { max-width: 400px; margin: 0 auto; }
-
-    h1 {
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-      text-align: center;
-      color: #4ecca3;
+    /* Header */
+    .header {
+      background: linear-gradient(180deg, #052d54 0%, #021f3d 100%);
+      color: #fff;
+      padding: 16px 20px;
+      padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .header-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: contain;
+      background: #fff;
+      padding: 4px;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .header h1 {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      line-height: 1.2;
+    }
+
+    .header .subtitle {
+      font-size: 11px;
+      opacity: 0.65;
+      margin-top: 3px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .container { max-width: 400px; margin: 0 auto; padding: 16px; }
 
     .form-group { margin-bottom: 14px; }
 
@@ -36,7 +78,7 @@
       font-size: 0.8rem;
       font-weight: 600;
       margin-bottom: 6px;
-      color: #aaa;
+      color: #666;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -44,10 +86,10 @@
     input, textarea, select {
       width: 100%;
       padding: 12px 14px;
-      border: 1px solid #333;
+      border: 1px solid #dcdcdc;
       border-radius: 10px;
-      background: #16213e;
-      color: #eee;
+      background: #fff;
+      color: #333;
       font-size: 1rem;
       transition: border-color 0.2s;
       -webkit-appearance: none;
@@ -55,7 +97,7 @@
 
     input:focus, textarea:focus, select:focus {
       outline: none;
-      border-color: #4ecca3;
+      border-color: #021f3d;
     }
 
     textarea { resize: vertical; min-height: 60px; }
@@ -68,48 +110,48 @@
     .toggle-btn {
       flex: 1;
       padding: 11px 8px;
-      border: 1px solid #333;
+      border: 1px solid #dcdcdc;
       border-radius: 10px;
-      background: #16213e;
-      color: #eee;
+      background: #fff;
+      color: #333;
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
       text-align: center;
     }
 
     .toggle-btn.active {
-      background: #4ecca3;
-      color: #1a1a2e;
-      border-color: #4ecca3;
+      background: #021f3d;
+      color: #fff;
+      border-color: #021f3d;
     }
 
     .toggle-btn.guest-active {
-      background: #e74c3c;
+      background: #e53935;
       color: #fff;
-      border-color: #e74c3c;
+      border-color: #e53935;
     }
 
     .toggle-btn.member-active {
-      background: #2ecc71;
+      background: #43a047;
       color: #fff;
-      border-color: #2ecc71;
+      border-color: #43a047;
     }
 
     .toggle-btn.half-active {
-      background: #f39c12;
-      color: #1a1a2e;
-      border-color: #f39c12;
+      background: #fb8c00;
+      color: #fff;
+      border-color: #fb8c00;
     }
 
     .submit-btn {
       width: 100%;
       padding: 16px;
       border: none;
-      border-radius: 10px;
-      background: #4ecca3;
-      color: #1a1a2e;
+      border-radius: 12px;
+      background: #021f3d;
+      color: #fff;
       font-size: 1.1rem;
       font-weight: 700;
       cursor: pointer;
@@ -117,25 +159,26 @@
       transition: all 0.2s;
     }
 
-    .submit-btn:active { transform: scale(0.97); opacity: 0.9; }
-    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .submit-btn:active:not(:disabled) { background: #011529; transform: scale(0.99); }
+    .submit-btn:disabled { background: #7a9ab8; cursor: not-allowed; }
 
     .status {
       text-align: center;
       margin-top: 12px;
       font-size: 0.9rem;
       min-height: 24px;
+      font-weight: 600;
     }
 
-    .status.success { color: #4ecca3; }
-    .status.error { color: #e74c3c; }
+    .status.success { color: #2e7d32; }
+    .status.error { color: #c62828; }
 
     .settings-toggle { text-align: center; margin-top: 28px; }
 
     .settings-toggle button {
       background: none;
       border: none;
-      color: #666;
+      color: #999;
       font-size: 0.8rem;
       cursor: pointer;
       text-decoration: underline;
@@ -145,8 +188,10 @@
       display: none;
       margin-top: 16px;
       padding: 16px;
-      background: #16213e;
-      border-radius: 10px;
+      background: #fff;
+      border: 1px solid #eaeaea;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
 
     .settings.visible { display: block; }
@@ -157,21 +202,22 @@
       padding: 12px;
       border: none;
       border-radius: 8px;
-      background: #333;
-      color: #eee;
+      background: #021f3d;
+      color: #fff;
       font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
     }
 
     .recent-log {
       margin-top: 28px;
       padding-top: 20px;
-      border-top: 1px solid #333;
+      border-top: 1px solid #e0e0e0;
     }
 
     .recent-log h2 {
       font-size: 0.8rem;
-      color: #666;
+      color: #999;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 10px;
@@ -179,16 +225,18 @@
 
     .log-entry {
       padding: 10px 12px;
-      background: #16213e;
+      background: #fff;
+      border: 1px solid #eee;
       border-radius: 8px;
       margin-bottom: 6px;
       font-size: 0.82rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
 
-    .log-entry .client-name { font-weight: 600; color: #4ecca3; }
+    .log-entry .client-name { font-weight: 700; color: #021f3d; }
     .log-entry .meta { color: #888; margin-top: 2px; font-size: 0.78rem; }
     .log-entry .badge {
       padding: 3px 8px;
@@ -197,8 +245,8 @@
       font-weight: 700;
       flex-shrink: 0;
     }
-    .badge-guest { background: #e74c3c; color: #fff; }
-    .badge-member { background: #2ecc71; color: #fff; }
+    .badge-guest { background: #e53935; color: #fff; }
+    .badge-member { background: #43a047; color: #fff; }
 
     .people-row {
       display: flex;
@@ -209,18 +257,19 @@
     .people-row button {
       width: 40px;
       height: 40px;
-      border: 1px solid #333;
+      border: 1px solid #dcdcdc;
       border-radius: 10px;
-      background: #16213e;
-      color: #eee;
+      background: #fff;
+      color: #021f3d;
       font-size: 1.2rem;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .people-row button:active { background: #4ecca3; color: #1a1a2e; }
+    .people-row button:active { background: #021f3d; color: #fff; }
 
     .people-count {
       font-size: 1.1rem;
@@ -228,12 +277,99 @@
       min-width: 24px;
       text-align: center;
     }
+
+    /* Header name badge */
+    .user-badge {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.15);
+      padding: 3px 12px;
+      border-radius: 20px;
+      color: #fff;
+    }
+
+    /* Screens */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* First-run setup */
+    .setup-logo { text-align: center; margin: 28px 0 14px; }
+    .setup-logo img {
+      width: 84px;
+      height: 84px;
+      border-radius: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    }
+    .setup-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #021f3d;
+      margin-bottom: 6px;
+    }
+    .setup-subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 24px;
+    }
+    .setup-card {
+      background: #fff;
+      border: 1px solid #eaeaea;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .setup-card label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .setup-error {
+      color: #c62828;
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+      min-height: 18px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>ICC Lesson Log</h1>
+  <div class="header" id="appHeader" style="display:none;">
+    <div class="header-inner">
+      <img src="icon-192.png" alt="ICC" class="header-logo">
+      <div class="header-text">
+        <h1>ICC Lesson Log</h1>
+        <div class="user-badge" id="headerUser"></div>
+      </div>
+    </div>
+  </div>
 
+  <div class="container">
+
+    <!-- ═══ SETUP SCREEN (first run) ═══ -->
+    <div id="setupScreen" class="screen">
+      <div class="setup-logo"><img src="icon-192.png" alt="ICC"></div>
+      <div class="setup-title">ICC Lesson Log</div>
+      <div class="setup-subtitle">Who are you?</div>
+      <div class="setup-card">
+        <label for="setupProName">Your Name</label>
+        <select id="setupProName">
+          <option value="">Loading pros...</option>
+        </select>
+        <button class="submit-btn" id="setupBtn" onclick="completeSetup()">Get Started</button>
+        <p class="setup-error" id="setupError"></p>
+      </div>
+    </div>
+
+    <!-- ═══ MAIN SCREEN ═══ -->
+    <div id="mainScreen" class="screen">
     <form id="lessonForm">
       <div class="form-group">
         <label>Date</label>
@@ -257,6 +393,7 @@
         <label>Duration</label>
         <div class="btn-row">
           <button type="button" class="toggle-btn" data-duration="30 minutes">30m</button>
+          <button type="button" class="toggle-btn" data-duration="45 minutes">45m</button>
           <button type="button" class="toggle-btn active" data-duration="1 hour">1 hr</button>
           <button type="button" class="toggle-btn" data-duration="1.5 hours">1.5 hr</button>
           <button type="button" class="toggle-btn" data-duration="2 hours">2 hr</button>
@@ -305,12 +442,15 @@
       <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/...">
       <button class="save-btn" onclick="saveSettings()">Save Settings</button>
     </div>
+    </div><!-- /mainScreen -->
   </div>
 
   <script>
     const STORAGE_KEY = 'iccLessonLog';
+    const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjVnKGOgO_RfcY_6LaqldVvtVVctpb9BJkj54r_NXUF_QflKaYtAQYPcp-0Br8appF/exec';
 
     let settings = JSON.parse(localStorage.getItem(`${STORAGE_KEY}_settings`) || '{}');
+    if (!settings.scriptUrl) settings.scriptUrl = DEFAULT_SCRIPT_URL;
     let recentLessons = JSON.parse(localStorage.getItem(`${STORAGE_KEY}_recent`) || '[]');
     let selectedDuration = '1 hour';
     let selectedGuestMember = 'GUEST';
@@ -326,26 +466,62 @@
     document.getElementById('scriptUrl').value = settings.scriptUrl || '';
 
     async function loadPros() {
-      const select = document.getElementById('proName');
+      const selects = [document.getElementById('proName'), document.getElementById('setupProName')];
       if (!settings.scriptUrl) {
-        select.innerHTML = '<option value="">Set Script URL first</option>';
+        selects.forEach(s => { if (s) s.innerHTML = '<option value="">Set Script URL first</option>'; });
         return;
       }
       try {
         const res = await fetch(settings.scriptUrl + '?action=getPros');
         const data = await res.json();
         if (data.result === 'success' && data.pros.length > 0) {
-          select.innerHTML = '<option value="">Select pro...</option>' +
-            data.pros.map(p => `<option value="${p}"${p === settings.proName ? ' selected' : ''}>${p}</option>`).join('');
+          selects.forEach(s => {
+            if (!s) return;
+            s.innerHTML = '<option value="">Select your name...</option>' +
+              data.pros.map(p => `<option value="${p}"${p === settings.proName ? ' selected' : ''}>${p}</option>`).join('');
+          });
         } else {
-          select.innerHTML = '<option value="">No pros found — add names to Pros tab</option>';
+          selects.forEach(s => { if (s) s.innerHTML = '<option value="">No pros found — add names to Pros tab</option>'; });
         }
       } catch (err) {
-        select.innerHTML = '<option value="">Failed to load pros</option>';
+        selects.forEach(s => { if (s) s.innerHTML = '<option value="">Failed to load pros</option>'; });
       }
     }
 
     loadPros();
+
+    // ─── Identity: pick your name once, then it's you moving forward ───
+    function updateHeaderBadge() {
+      const badge = document.getElementById('headerUser');
+      badge.textContent = settings.proName || '';
+      badge.style.display = settings.proName ? 'inline-block' : 'none';
+    }
+
+    function enterMain() {
+      document.getElementById('setupScreen').classList.remove('active');
+      document.getElementById('mainScreen').classList.add('active');
+      document.getElementById('appHeader').style.display = 'block';
+      updateHeaderBadge();
+    }
+
+    function showSetup() {
+      document.getElementById('mainScreen').classList.remove('active');
+      document.getElementById('setupScreen').classList.add('active');
+      document.getElementById('appHeader').style.display = 'none';
+    }
+
+    function completeSetup() {
+      const val = document.getElementById('setupProName').value;
+      const err = document.getElementById('setupError');
+      if (!val) { err.textContent = 'Please select your name.'; return; }
+      err.textContent = '';
+      settings.proName = val;
+      localStorage.setItem(`${STORAGE_KEY}_settings`, JSON.stringify(settings));
+      enterMain();
+    }
+
+    // Returning pro (name already saved) goes straight to the form; first-timers see setup.
+    if (settings.proName) { enterMain(); } else { showSetup(); }
 
     document.querySelectorAll('[data-duration]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -391,6 +567,13 @@
 
       if (!client) return;
 
+      const digitScan = (client + ' ' + notes).replace(/[\s-]/g, '');
+      if (/\d{13,}/.test(digitScan)) {
+        status.textContent = 'That looks like a card number — never enter credit card info here';
+        status.className = 'status error';
+        return;
+      }
+
       if (!settings.scriptUrl) {
         status.textContent = 'Set your Google Script URL in Settings first';
         status.className = 'status error';
@@ -413,9 +596,6 @@
       let displayDuration = selectedDuration;
       if (selectedRate === 'HALF OFF') {
         displayDuration = 'HALF OFF ' + selectedDuration;
-      }
-      if (peopleCount > 1) {
-        displayDuration += ' ' + peopleCount + ' people';
       }
 
       const payload = {
@@ -477,6 +657,7 @@
       document.getElementById('status').textContent = 'Settings saved';
       document.getElementById('status').className = 'status success';
       loadPros();
+      updateHeaderBadge();
     }
 
     function renderRecent() {
