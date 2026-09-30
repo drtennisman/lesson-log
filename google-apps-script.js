@@ -1,39 +1,35 @@
 // Google Apps Script — deploy as Web App
-// 1. Open the "ICC Lesson Log Worksheet for App" Google Sheet
+// 1. Open your existing "Member/Guest Pros Charging Sheet" Google Sheet
 // 2. Go to Extensions > Apps Script
-// 3. Paste this code
+// 3. Paste this code (replace anything already there)
 // 4. Deploy > New Deployment > Web App
 //    - Execute as: Me
 //    - Who has access: Anyone
-// 5. Copy the deployment URL and paste it into the app's Settings
+// 5. Copy the deployment URL — that's all you need.
+//    The app already has the default URL hardcoded, but if you redeploy
+//    you can update it in Settings.
 //
-// Tabs are created automatically on first use — no manual sheet setup:
-// - "Pros" tab: the pro list (seeded with the current roster). To add or
-//   remove a pro, just edit the names in column A — the app's dropdown
-//   updates on next load.
-// - Monthly tabs ("July 2026", "August 2026", ...): one tab per calendar
-//   month, auto-created when the first lesson of that month is logged. Each
-//   row is a lesson with a "Charged" checkbox the shop manager ticks after
-//   entering it in Jonas. The weekly reminder scans every month at once, so
-//   nothing gets lost in an old tab.
+// This script writes to your EXISTING per-pro monthly tabs
+// (e.g., "J.C. September 2026") using your existing column format:
+//   Date | Name | Guest or Member | Length of Lesson/Amount | Notes | Charged
+//
+// It adds a "Charged" checkbox column (F) for billing tracking.
+// If a pro's tab for the current month doesn't exist yet, it creates one.
+//
+// The "Pros" tab lists the pro roster — edit column A to add/remove pros.
+// The app's dropdown updates on next load.
 //
 // WEEKLY UNCHARGED REMINDER (optional — one-time setup):
-//   After pasting this code, run the "setupWeeklyReminder" function once
-//   (pick it from the toolbar dropdown and click Run, then authorize).
-//   Every Monday morning it emails the people listed on the "Reminders"
-//   tab about any lessons whose "Charged" box is still unchecked.
-//   - "Reminders" tab columns: Name | Email | Send What
-//   - Send What = "All lessons" (whole outstanding list, for the manager)
-//     or "Only their own" (just that person's lessons, for each pro).
-//   Add or change emails on that tab anytime — no code edits needed.
+//   After pasting this code, run "setupWeeklyReminder" once from the
+//   toolbar dropdown (click Run, then authorize). Every Monday at 7am
+//   it emails people listed on the "Reminders" tab about uncharged lessons.
 
-const HEADERS = ['Date', 'Pro', 'Client Name', 'Member/Guest', 'Duration', 'People', 'Notes', 'Charged'];
+const HEADERS = ['Date:', 'Name:', 'Guest or Member:', 'Length of Lesson/Amount:', 'Notes:', 'Charged'];
 const PROS_SHEET_NAME = 'Pros';
 const REMINDERS_SHEET_NAME = 'Reminders';
-const CHARGED_COL = 8;
-const GUEST_MEMBER_COL = 4;
+const CHARGED_COL = 6;
+const GUEST_MEMBER_COL = 3;
 
-// Lessons uncharged longer than this many days get a ⚠️ flag in the email.
 const AGING_DAYS = 14;
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -64,20 +60,35 @@ function getProsSheet_(ss) {
   return prosSheet;
 }
 
-// Turns a lesson date "m/d/yy" into a monthly tab name like "July 2026".
-// Falls back to the current month if the date can't be parsed.
-function monthTabName_(dateStr) {
+// Builds a tab name like "J.C. September 2026" from the pro name and lesson date.
+// Existing tabs use the pro's first name only ("Will September 2026"), so we
+// look for that first, then the full name, and create with the short form.
+function proMonthTabName_(ss, proName, dateStr) {
+  var suffix;
   var parts = String(dateStr).split('/');
-  if (parts.length === 3) {
-    var m = parseInt(parts[0], 10);
+  var m = parts.length === 3 ? parseInt(parts[0], 10) : 0;
+  if (m >= 1 && m <= 12) {
     var y = parts[2].length === 2 ? '20' + parts[2] : parts[2];
-    if (m >= 1 && m <= 12) return MONTH_NAMES[m - 1] + ' ' + y;
+    suffix = ' ' + MONTH_NAMES[m - 1] + ' ' + y;
+  } else {
+    var now = new Date();
+    suffix = ' ' + MONTH_NAMES[now.getMonth()] + ' ' + now.getFullYear();
   }
-  var now = new Date();
-  return MONTH_NAMES[now.getMonth()] + ' ' + now.getFullYear();
+  var shortName = String(proName).trim().split(/\s+/)[0];
+  if (ss.getSheetByName(shortName + suffix)) return shortName + suffix;
+  if (ss.getSheetByName(proName + suffix)) return proName + suffix;
+  return shortName + suffix;
 }
 
-// Gets (or creates + formats) the monthly lesson tab.
+// Extracts the pro name from a tab name like "J.C. September 2026" → "J.C."
+function proNameFromTab_(tabName) {
+  for (var i = 0; i < MONTH_NAMES.length; i++) {
+    var idx = tabName.indexOf(' ' + MONTH_NAMES[i] + ' ');
+    if (idx !== -1) return tabName.substring(0, idx);
+  }
+  return null;
+}
+
 function getOrCreateLessonSheet_(ss, tabName) {
   var sheet = ss.getSheetByName(tabName);
   if (!sheet) {
@@ -91,14 +102,17 @@ function getOrCreateLessonSheet_(ss, tabName) {
   return sheet;
 }
 
-// True if a tab looks like a lesson tab (matching header row). Lets the weekly
-// reminder scan every monthly tab without caring what they're named.
+// True if a tab looks like a per-pro lesson tab (has the right headers or
+// matches the existing format with Date in A1).
 function isLessonSheet_(sheet) {
   var name = sheet.getName();
   if (name === PROS_SHEET_NAME || name === REMINDERS_SHEET_NAME) return false;
-  if (sheet.getLastColumn() < HEADERS.length || sheet.getLastRow() < 1) return false;
-  var header = sheet.getRange(1, 1, 1, HEADERS.length).getValues()[0];
-  return header[0] === HEADERS[0] && header[CHARGED_COL - 1] === HEADERS[CHARGED_COL - 1];
+  if (sheet.getLastRow() < 2) return false;
+
+  var firstCell = sheet.getRange(1, 1).getValue().toString().trim();
+  if (firstCell === 'Date:' || firstCell === 'Date') return true;
+
+  return false;
 }
 
 function doGet(e) {
@@ -136,15 +150,21 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = getOrCreateLessonSheet_(ss, monthTabName_(data.date));
+    const proName = data.pro || 'Unknown';
+    const tabName = proMonthTabName_(ss, proName, data.date);
+    var sheet = getOrCreateLessonSheet_(ss, tabName);
+
+    // Combine duration + people into one field to match existing format
+    var lessonAmount = data.duration || '1 hour';
+    if (data.people && data.people > 1) {
+      lessonAmount += ' ' + data.people + ' people';
+    }
 
     sheet.appendRow([
       data.date,
-      data.pro || 'Unknown',
       data.client,
       data.guestMember,
-      data.duration,
-      data.people || 1,
+      lessonAmount,
       data.notes || '',
       false
     ]);
@@ -181,10 +201,6 @@ function doPost(e) {
 // Weekly uncharged-lessons reminder
 // ---------------------------------------------------------------------------
 
-// Run this ONCE (from the Apps Script editor toolbar) to schedule the weekly
-// email. Safe to run again — it clears any old copy of the schedule first.
-// Also creates the "Reminders" tab now so you can fill in emails before the
-// first send.
 function setupWeeklyReminder() {
   getRemindersSheet_(SpreadsheetApp.getActiveSpreadsheet());
 
@@ -201,7 +217,6 @@ function setupWeeklyReminder() {
     .create();
 }
 
-// Turn a Date or "m/d/yy" string cell into a Date (or null if unparseable).
 function coerceDate_(val) {
   if (val instanceof Date && !isNaN(val)) return val;
   if (typeof val === 'string') {
@@ -218,8 +233,6 @@ function coerceDate_(val) {
   return null;
 }
 
-// Returns the "Reminders" tab, creating and seeding it on first use so J.C.
-// only has to fill in email addresses.
 function getRemindersSheet_(ss) {
   var sheet = ss.getSheetByName(REMINDERS_SHEET_NAME);
   if (sheet) return sheet;
@@ -242,8 +255,6 @@ function getRemindersSheet_(ss) {
   return sheet;
 }
 
-// Reads the Reminders tab into [{name, email, ownOnly}]. Rows without a valid
-// email are skipped. "Send What" containing "own" => that person's lessons only.
 function getReminderRecipients_(ss) {
   var sheet = getRemindersSheet_(ss);
   var recipients = [];
@@ -261,7 +272,6 @@ function getReminderRecipients_(ss) {
   return recipients;
 }
 
-// Builds one recipient's email from their relevant uncharged lessons.
 function buildDigestEmail_(list, opts) {
   var agingCount = 0;
   var rowsHtml = '';
@@ -279,7 +289,7 @@ function buildDigestEmail_(list, opts) {
       (opts.ownOnly ? '' : '<td style="padding:6px 10px;border:1px solid #ddd">' + o.pro + '</td>') +
       '<td style="padding:6px 10px;border:1px solid #ddd">' + o.client + '</td>' +
       '<td style="padding:6px 10px;border:1px solid #ddd;color:' + gmColor + ';font-weight:bold">' + o.guestMember + '</td>' +
-      '<td style="padding:6px 10px;border:1px solid #ddd">' + o.duration + (o.people > 1 ? ' · ' + o.people + ' people' : '') + '</td>' +
+      '<td style="padding:6px 10px;border:1px solid #ddd">' + o.lesson + '</td>' +
       '</tr>';
   }
 
@@ -314,9 +324,8 @@ function buildDigestEmail_(list, opts) {
   return { subject: subject, htmlBody: htmlBody };
 }
 
-// Scans every monthly lesson tab for unchecked "Charged" rows and emails each
-// person on the Reminders tab. Called by the weekly trigger; also runnable by
-// hand to test.
+// Scans every lesson tab for unchecked "Charged" rows and emails each
+// recipient. Extracts the pro name from the tab name.
 function sendUnchargedDigest() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheets = ss.getSheets();
@@ -327,15 +336,23 @@ function sendUnchargedDigest() {
     var sheet = sheets[s];
     if (!isLessonSheet_(sheet)) continue;
 
+    var tabName = sheet.getName();
+    var proFromTab = proNameFromTab_(tabName) || tabName;
+
     var lastRow = sheet.getLastRow();
     if (lastRow <= 1) continue;
 
-    var values = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+    var numCols = Math.min(sheet.getLastColumn(), HEADERS.length);
+    var values = sheet.getRange(2, 1, lastRow - 1, numCols).getValues();
+
     for (var i = 0; i < values.length; i++) {
       var row = values[i];
-      var charged = row[CHARGED_COL - 1] === true;
-      var client = (row[2] || '').toString().trim();
-      if (charged || !client) continue;
+      var client = (row[1] || '').toString().trim();
+      if (!client) continue;
+
+      // Check "Charged" column if it exists on this tab
+      var charged = numCols >= CHARGED_COL ? row[CHARGED_COL - 1] === true : false;
+      if (charged) continue;
 
       var dt = coerceDate_(row[0]);
       var ageDays = dt ? Math.floor((now - dt) / 86400000) : 0;
@@ -343,11 +360,10 @@ function sendUnchargedDigest() {
         date: dt ? Utilities.formatDate(dt, ss.getSpreadsheetTimeZone(), 'M/d/yy') : (row[0] || ''),
         sortKey: dt ? dt.getTime() : Number.MAX_SAFE_INTEGER,
         ageDays: ageDays,
-        pro: (row[1] || '').toString(),
+        pro: proFromTab,
         client: client,
-        guestMember: row[3] || '',
-        duration: row[4] || '',
-        people: row[5] || 1
+        guestMember: row[2] || '',
+        lesson: row[3] || ''
       });
     }
   }
@@ -361,15 +377,13 @@ function sendUnchargedDigest() {
     var person = recipients[r];
     var list = outstanding;
     if (person.ownOnly) {
-      var target = person.name.toLowerCase();
-      list = outstanding.filter(function (o) { return o.pro.trim().toLowerCase() === target; });
-      // Don't nag a pro who's all caught up.
+      var target = person.name.trim().split(/\s+/)[0].toLowerCase();
+      list = outstanding.filter(function (o) { return o.pro.trim().split(/\s+/)[0].toLowerCase() === target; });
       if (list.length === 0) continue;
     }
 
     var email;
     if (list.length === 0) {
-      // "All lessons" recipient with nothing outstanding — send the all-clear.
       email = {
         subject: '✅ Lesson charging: all caught up',
         htmlBody:
