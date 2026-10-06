@@ -398,6 +398,14 @@
           </div>
 
           <div class="form-group">
+            <label>Payment</label>
+            <div class="btn-row">
+              <button type="button" class="toggle-btn active" data-paid="false" onclick="setPaid(false, this)">Not yet paid</button>
+              <button type="button" class="toggle-btn" data-paid="true" onclick="setPaid(true, this)">Already paid</button>
+            </div>
+          </div>
+
+          <div class="form-group">
             <label>Notes <span style="font-weight:400;color:#999">(optional)</span></label>
             <textarea id="notes" placeholder="Quick notes..."></textarea>
           </div>
@@ -443,6 +451,7 @@
     let selectedDuration = '1 hour';
     let selectedGuestMember = 'GUEST';
     let selectedRate = 'FULL';
+    let selectedPaid = false;
     let peopleCount = 1;
 
     const today = new Date();
@@ -537,6 +546,12 @@
       }
     }
 
+    function setPaid(val, btn) {
+      selectedPaid = val;
+      document.querySelectorAll('[data-paid]').forEach(b => b.classList.remove('active', 'member-active'));
+      btn.classList.add(val ? 'member-active' : 'active');
+    }
+
     function adjustPeople(delta) {
       peopleCount = Math.max(1, Math.min(10, peopleCount + delta));
       document.getElementById('peopleCount').textContent = peopleCount;
@@ -592,6 +607,7 @@
         duration: displayDuration,
         people: peopleCount,
         rate: selectedRate,
+        paid: selectedPaid,
         notes
       };
 
@@ -617,6 +633,7 @@
           peopleCount = 1;
           document.getElementById('peopleCount').textContent = '1';
           setRate('FULL', document.querySelector('[data-rate="FULL"]'));
+          setPaid(false, document.querySelector('[data-paid="false"]'));
           document.getElementById('client').focus();
         } else {
           throw new Error(result.message || 'Unknown error');
