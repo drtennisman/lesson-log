@@ -89,23 +89,6 @@ function proNameFromTab_(tabName) {
   return null;
 }
 
-// Turns a row green whenever its Charged box is ticked. Added once per tab.
-function ensureChargedHighlight_(sheet) {
-  var formula = '=$F2=TRUE';
-  var rules = sheet.getConditionalFormatRules();
-  for (var i = 0; i < rules.length; i++) {
-    var cond = rules[i].getBooleanCondition();
-    if (cond && cond.getCriteriaValues()[0] === formula) return;
-  }
-  var rule = SpreadsheetApp.newConditionalFormatRule()
-    .whenFormulaSatisfied(formula)
-    .setBackground('#93e08f')
-    .setRanges([sheet.getRange(2, 1, Math.max(sheet.getMaxRows() - 1, 1), CHARGED_COL)])
-    .build();
-  rules.push(rule);
-  sheet.setConditionalFormatRules(rules);
-}
-
 function getOrCreateLessonSheet_(ss, tabName) {
   var sheet = ss.getSheetByName(tabName);
   if (!sheet) {
@@ -170,7 +153,6 @@ function doPost(e) {
     const proName = data.pro || 'Unknown';
     const tabName = proMonthTabName_(ss, proName, data.date);
     var sheet = getOrCreateLessonSheet_(ss, tabName);
-    ensureChargedHighlight_(sheet);
 
     // Combine duration + people into one field to match existing format
     var lessonAmount = data.duration || '1 hour';
