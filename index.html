@@ -686,7 +686,13 @@
     renderRecent();
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js');
+      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(r => r.update());
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (reloaded) return;
+        reloaded = true;
+        location.reload();
+      });
     }
   </script>
 </body>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lesson-log-v7';
+const CACHE_NAME = 'lesson-log-v8';
 const ASSETS = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -14,6 +14,6 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    fetch(e.request, { cache: 'no-store' }).catch(() => caches.match(e.request))
   );
 });
